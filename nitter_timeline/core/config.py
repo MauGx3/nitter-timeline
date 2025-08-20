@@ -31,6 +31,9 @@ class Settings(BaseSettings):
     user_agent: str = (
         "nitter-timeline/0.1 (+https://github.com/yourname/nitter-timeline)"
     )
+    # Server
+    server_host: str = "127.0.0.1"
+    server_port: int = 8000
     # Security related
     max_feeds_per_request: int = 10
     allowed_feed_schemes: tuple[str, ...] = ("https", "http")

@@ -21,13 +21,53 @@ Aggregate multiple Nitter RSS feeds (users, lists, searches) and present them in
 
 ## Quick start
 
-(After dependencies installed)
+### 1. Create & activate a virtual environment (recommended)
+
+```bash
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\\Scripts\\activate
+```
+
+### 2. Install in editable mode (provides console script)
+
+```bash
+pip install -e .
+```
+
+### 3. Run the app (choose one)
+
+Console script (preferred):
+
+```bash
+nitter-timeline --reload
+```
+
+Module form:
+
+```bash
+python -m nitter_timeline --reload
+```
+
+Direct uvicorn (still works):
 
 ```bash
 uvicorn nitter_timeline.main:app --reload
 ```
 
-Open <http://127.0.0.1:8000>
+Visit: <http://127.0.0.1:8000>
+
+Flags available for the console script / module:
+
+- `--host` (default `127.0.0.1` or `NT_SERVER_HOST` env)
+- `--port` (default `8000` or `NT_SERVER_PORT` env)
+- `--reload` (development auto-reload)
+
+Environment overrides use the `NT_` prefix (see `core/config.py`). Example:
+
+```bash
+export NT_SERVER_PORT=9000
+nitter-timeline
+```
 
 ## Structure
 
