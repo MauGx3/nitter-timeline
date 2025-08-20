@@ -5,7 +5,7 @@ from functools import lru_cache
 from pydantic import BaseSettings, HttpUrl
 
 
-class Settings(BaseSettings):  # pylint: disable=too-few-public-methods
+class Settings(BaseSettings):
     """Runtime configuration loaded from environment variables.
 
     Prefix: ``NT_`` (e.g. ``NT_CACHE_TTL_SECONDS``). Values may be supplied
@@ -39,6 +39,10 @@ class Settings(BaseSettings):  # pylint: disable=too-few-public-methods
     # Basic allow list of allowed domains suffixes
     # wildcard semantics: domain endswith(suffix)
     allowed_feed_domain_suffixes: list[str] = ["nitter.net", "nitter.pufe.org"]
+    # Security headers
+    security_headers_enabled: bool = True
+    # Temporary allowance for inline scripts until JS extracted
+    csp_allow_inline_scripts: bool = False
 
     class Config:  # pylint: disable=too-few-public-methods
         env_file = ".env"

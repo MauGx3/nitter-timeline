@@ -3,6 +3,7 @@
 Responsible for retrieving individual or multiple RSS feeds concurrently
 with a small in-memory TTL cache to reduce network load.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -41,8 +42,8 @@ async def get_client() -> httpx.AsyncClient:
             headers={"User-Agent": settings.user_agent},
         )
     return _client
- 
- 
+
+
 async def fetch_feed(url: str) -> dict | None:
     """Fetch and parse a single RSS/Atom feed.
 
@@ -68,8 +69,8 @@ async def fetch_feed(url: str) -> dict | None:
     parsed = feedparser.parse(resp.content)
     _cache[url] = parsed
     return parsed
- 
- 
+
+
 async def fetch_many(urls: Iterable[str]) -> list[tuple[str, dict]]:
     """Fetch multiple feeds concurrently.
 

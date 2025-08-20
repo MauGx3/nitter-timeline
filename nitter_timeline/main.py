@@ -5,11 +5,13 @@ from fastapi.staticfiles import StaticFiles
 from nitter_timeline.api.routes import api_router
 from nitter_timeline.core.config import settings as _settings  # noqa: F401
 from nitter_timeline.core.logging import configure_logging
+from nitter_timeline.core.security import add_security_middleware
 from nitter_timeline.web.pages import page_router
 
 configure_logging()
 
 app = FastAPI(title="Nitter Timeline", version="0.1.0")
+add_security_middleware(app)
 
 app.include_router(page_router)
 app.include_router(api_router, prefix="/api")
