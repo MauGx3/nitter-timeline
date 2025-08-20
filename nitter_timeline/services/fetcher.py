@@ -6,14 +6,16 @@ with a small in-memory TTL cache to reduce network load.
 from __future__ import annotations
 
 import asyncio
+import ipaddress
 import logging
+import socket
 from collections.abc import Iterable
+from urllib.parse import urlparse
 
 import feedparser
 import httpx
 from cachetools import TTLCache
 
-# Local imports
 from nitter_timeline.core.config import settings
 
 logger = logging.getLogger(__name__)
@@ -39,6 +41,7 @@ async def get_client() -> httpx.AsyncClient:
             headers={"User-Agent": settings.user_agent},
         )
     return _client
+ 
  
 async def fetch_feed(url: str) -> dict | None:
     """Fetch and parse a single RSS/Atom feed.
@@ -66,6 +69,7 @@ async def fetch_feed(url: str) -> dict | None:
     _cache[url] = parsed
     return parsed
  
+ 
 async def fetch_many(urls: Iterable[str]) -> list[tuple[str, dict]]:
     """Fetch multiple feeds concurrently.
 
@@ -84,10 +88,38 @@ async def fetch_many(urls: Iterable[str]) -> list[tuple[str, dict]]:
     """
     results: list[tuple[str, dict]] = []
 
+    def _valid(url: str) -> bool:
+        try:
+            parsed = urlparse(url)
+            if parsed.scheme not in settings.allowed_feed_schemes:
+                return False
+            if settings.enforce_https_feeds and parsed.scheme != "https":
+                return False
+            host = parsed.hostname or ""
+            if not any(
+                host.endswith(suf)
+                for suf in settings.allowed_feed_domain_suffixes
+            ):
+                return False
+            # Resolve and ensure not private
+            for info in socket.getaddrinfo(host, None):
+                ip = ipaddress.ip_address(info[4][0])
+                if ip.is_private or ip.is_loopback or ip.is_link_local:
+                    return False
+            return True
+        except Exception:  # validation failure -> False
+            return False
+
     async def one(feed_url: str) -> None:
         parsed = await fetch_feed(feed_url)
         if parsed:
             results.append((feed_url, parsed))
 
-    await asyncio.gather(*(one(u) for u in urls))
+    filtered = []
+    for u in urls:
+        if _valid(u):
+            filtered.append(u)
+            if len(filtered) >= settings.max_feeds_per_request:
+                break
+    await asyncio.gather(*(one(u) for u in filtered))
     return results

@@ -31,6 +31,14 @@ class Settings(BaseSettings):  # pylint: disable=too-few-public-methods
     user_agent: str = (
         "nitter-timeline/0.1 (+https://github.com/yourname/nitter-timeline)"
     )
+    # Security related
+    max_feeds_per_request: int = 10
+    allowed_feed_schemes: tuple[str, ...] = ("https", "http")
+    enforce_https_feeds: bool = True
+    sanitize_html: bool = True
+    # Basic allow list of allowed domains suffixes
+    # wildcard semantics: domain endswith(suffix)
+    allowed_feed_domain_suffixes: list[str] = ["nitter.net", "nitter.pufe.org"]
 
     class Config:  # pylint: disable=too-few-public-methods
         env_file = ".env"

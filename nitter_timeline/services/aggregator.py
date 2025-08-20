@@ -10,7 +10,9 @@ from collections.abc import Sequence
 
 from dateutil import parser as dateparser
 
+from nitter_timeline.core.config import settings
 from nitter_timeline.models.feed import AggregatedTimeline, FeedItem
+from nitter_timeline.services.sanitize import sanitize_html
 
 
 def _make_id(entry: dict) -> str:
@@ -65,6 +67,8 @@ def parse_items(parsed_feed: dict) -> list[FeedItem]:
             content_html = first.get("value", "")
         else:
             content_html = e.get("summary", "")
+        if settings.sanitize_html:
+            content_html = sanitize_html(content_html)
         items.append(
             FeedItem(
                 id=_make_id(e),
