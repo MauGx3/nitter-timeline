@@ -36,6 +36,7 @@ class Settings(BaseSettings):
     allowed_feed_schemes: tuple[str, ...] = ("https", "http")
     enforce_https_feeds: bool = True
     sanitize_html: bool = True
+    max_images_per_item: int = 4
     # Basic allow list of allowed domains suffixes
     # wildcard semantics: domain endswith(suffix)
     allowed_feed_domain_suffixes: list[str] = ["nitter.net", "nitter.pufe.org"]

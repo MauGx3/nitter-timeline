@@ -69,6 +69,28 @@ def parse_items(parsed_feed: dict) -> list[FeedItem]:
             content_html = e.get("summary", "")
         if settings.sanitize_html:
             content_html = sanitize_html(content_html)
+            # Enforce max images per item if configured
+            if settings.max_images_per_item >= 0:
+                import re
+                img_pattern = re.compile(r"<img\b[^>]*>", re.IGNORECASE)
+                imgs = img_pattern.findall(content_html)
+                if len(imgs) > settings.max_images_per_item:
+                    keep_set = set(imgs[: settings.max_images_per_item])
+                    new_parts: list[str] = []
+                    kept = 0
+                    last_end = 0
+                    for m in img_pattern.finditer(content_html):
+                        new_parts.append(content_html[last_end:m.start()])
+                        tag = m.group(0)
+                        if (
+                            tag in keep_set
+                            and kept < settings.max_images_per_item
+                        ):
+                            new_parts.append(tag)
+                            kept += 1
+                        last_end = m.end()
+                    new_parts.append(content_html[last_end:])
+                    content_html = "".join(new_parts)
         items.append(
             FeedItem(
                 id=_make_id(e),
