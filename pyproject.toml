@@ -24,7 +24,37 @@ dependencies = [
 dev = ["pytest>=8.3", "pytest-asyncio>=0.23", "ruff>=0.5.5", "mypy>=1.11.0", "types-python-dateutil"]
 
 [tool.ruff]
+# Keep in sync with Pylint max-line-length.
 line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+# Selected rule sets:
+# E,F: pycodestyle & pyflakes
+# I: isort
+# UP: pyupgrade
+# B: flake8-bugbear
+# SIM: flake8-simplify
+# ASYNC: flake8-async
+# N: pep8-naming
+# A: flake8-builtins
+# C4: flake8-comprehensions
+# RUF: Ruff-specific rules
+select = ["E", "F", "I", "UP", "B", "SIM", "ASYNC", "N", "A", "C4", "RUF"]
+
+# Ignore rules that conflict with project style or are handled elsewhere.
+ignore = []
+
+[tool.ruff.lint.per-file-ignores]
+# Tests may use assert statements and relaxed naming.
+"tests/**/*" = ["S101", "N802", "N803", "N806"]
+
+[tool.ruff.format]
+# Defer formatting opinion beyond line length for now (can enable when migrating fully from other tools).
+quote-style = "preserve"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
 
 [tool.pytest.ini_options]
 addopts = "-q"

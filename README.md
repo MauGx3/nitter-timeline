@@ -52,6 +52,25 @@ nitter_timeline/
 - Add incremental API for pagination
 - Add tests for parsing & aggregation
 
+## Tooling
+
+### Ruff
+
+Ruff is configured (see `[tool.ruff]` in `pyproject.toml`) to provide fast linting (pyflakes/pycodestyle), import sorting, pyupgrade suggestions, and several quality rule sets (bugbear, simplify, async, naming, comprehensions). Run it locally:
+
+```bash
+ruff check .
+ruff check . --fix  # apply safe autofixes
+```
+
+You can also sort imports & format (if later enabled) with:
+
+```bash
+ruff check --select I . --fix
+```
+
+Pylint remains for deeper design checks; over time some overlap can be reduced.
+
 ---
 
 MIT License
